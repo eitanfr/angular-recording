@@ -1,43 +1,176 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>My AngularJS App</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
-  <link rel="stylesheet" href="app.css">
-  <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
+<!DOCTYPE html >
+<html ng-app="myModule" >
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Recordings</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="css/my.css" type="text/css" rel="stylesheet" >
+    <!--<script src="scripts/bootstrap.js"></script>-->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/records.js"></script>
+
 </head>
 <body>
-  <ul class="menu">
-    <li><a href="#/view1">view1</a></li>
-    <li><a href="#/view2">view2</a></li>
-  </ul>
 
-  <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">server-name</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <form class="navbar-form navbar-right" role="form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success">Sign in</button>
+                </form>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </div>
 
-  <div ng-view></div>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Recording</h1>
+            <p>
+                Gives you a easy way to search,filter and download records. <br>
+                Enjoy!
+            </p>
+            <p><a class="btn btn-primary " role="button">Learn more &raquo;</a></p>
+        </div>
+    </div>
 
-  <div>Angular seed app: v<span app-version></span></div>
+    <!-- Main recording table -->
+    <div class="container" ng-controller="RecordsCtrl">
+        <!--// DownLoad modal-->
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Download records</h3>
+            </div>
+            <div class="modal-body">
+                Choose format:
+                <div class="btn-group">
+                    <label class="btn btn-default" ng-model="radioModel" btn-radio="'Left'" uncheckable>Rti record</label>
+                    <label class="btn btn-default" ng-model="radioModel" btn-radio="'Middle'" uncheckable>CSV</label>
+                </div>
+                <p>
+                    *notice if all files will be compressed to zip
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" ng-click="ok()" ng-disabled="!radioModel">DownLoad</button>
+                <button class="btn btn-warning" ng-click="ok()" ng-disabled="!radioModel">FTP</button>
+                <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
 
-  <!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="app.js"></script>
-  <script src="view1/view1.js"></script>
-  <script src="view2/view2.js"></script>
-  <script src="components/version/version.js"></script>
-  <script src="components/version/version-directive.js"></script>
-  <script src="components/version/interpolate-filter.js"></script>
+        <!--Filert scope-->
+      <div class="form-horizontal">
+          <div   class="form-group">
+              <label class="control-label col-sm-2">Search:</label>
+              <div class="col-sm-2">
+                  <input  class="form-control" ng-model="searchText" ng-change="currentPage=1"  placeholder="Record name">
+              </div>
+              <div class="col-sm-2 col-sm-offset-6 text-right" >
+                  <button class="btn btn-lg  btn-success " ng-click="open()">DownLoad!</button>
+              </div>
+          </div>
+
+          <div class="form-group">
+
+            <label class="fixed-date-label col-sm-2" style="text-align: right">Date filter:</label>
+            <div class="col-md-2 fixed-datepicker">
+                <p class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="startDate" is-open="startOpened" min-date="minDate" max-date="'2015-06-22'" show-button-bar="false" ng-required="true" placeholder="Start date"/>
+                 <span class="input-group-btn">
+                   <button type="button" class="btn btn-default" ng-click="openStart($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                 </span>
+                </p>
+            </div>
+            <div class="col-md-2">
+                <timepicker ng-model="startTime"  hour-step="1" minute-step="15"  show-meridian="false" ></timepicker>
+            </div>
+
+              <label class="fixed-date-label col-sm-1" style="text-align: right">to:</label>
+            <div class="col-md-2 fixed-datepicker">
+                <p class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="endDate" is-open="endOpened" min-date="minDate" max-date="'2015-06-22'" show-button-bar="false" ng-required="true" placeholder="End date" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openEnd($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+                </p>
+            </div>
+
+           <div class="col-md-2">
+               <timepicker ng-model="endTime"  hour-step="1" minute-step="15"  show-meridian="false"></timepicker>
+           </div>
+
+        </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2">
+                Old records (Zipped):
+            </label>
+              <label class="control-label">
+                  <input type="checkbox">
+              </label>
+          </div>
+
+      </div>
+
+        <div class=" col-sm-12 fixed-table-body">
+            <table class=" table table-hover " >
+                <thead >
+                    <tr>
+                        <th> </th>
+                        <th ng-click="reverse=!reverse;order('name', reverse)">
+                                Name
+                                <span ng-class="arrowNameClass"></span>
+                        </th>
+                        <th ng-click="reverse=!reverse;order('date', reverse)">
+                            Date
+                            <span ng-class="arrowDateClass"></span>
+                        </th>
+                        <th ng-click="reverse=!reverse;order('size', reverse)">
+                            Size
+                            <span ng-class="arrowSizeClass"></span>
+                        </th>
+                    </tr>
+                </thead>
+
+                        <tbody>
+                            <tr ng-class="{success :record.checked}" ng-repeat="record in recordsList | filter:searchText| filter:dateRange(startDate,startTime,endDate,endTime) | filter:subArray(currentPage)" ng-click="setChecked(record)">
+                                <td style="width: 8%">
+                                    <input type="checkbox" ng-model="record.checked" ng-change="setChecked(record)" >
+
+                                </td>
+                                <td style="width: 20%"> {{ record.name}}</td>
+                                <td style="width: 30%">{{record.date | date:'short'}}</td>
+                                <td style="width: 30%">{{record.size}}</td>
+
+                            </tr>
+
+                        </tbody >
+
+
+            </table>
+
+        </div>
+        <footer class="col-sm-12  modal-footer">
+
+            <pagination total-items="filteredItems" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+            <p>&copy; Eitanf 2014</p>
+        </footer>
+    </div> <!-- /container -->
+
 </body>
 </html>

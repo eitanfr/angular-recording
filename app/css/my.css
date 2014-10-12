@@ -1,0 +1,53 @@
+.fixed-table-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 350px;
+}
+
+tbody {
+    height: 100px;
+    overflow: auto;
+}
+
+.checked-true{
+    background-color: #dff0d8;
+}
+
+.checked{
+    background-color: #dff0d8;
+}
+
+
+.arrow-true-true{
+    display: inline-block;
+    width: 0;
+    height: 0;
+
+    vertical-align: middle;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+
+    border-top: 0;
+    border-bottom: 4px solid;
+
+}
+
+.arrow-true-false{
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    margin: 10px 5 px;
+}
+
+
+.fixed-date-label{
+    padding-top: 40px;
+}
+
+.fixed-datepicker{
+    padding-top: 34px;
+}

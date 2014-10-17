@@ -1,72 +1,52 @@
-var myModule = angular.module('myModule',['ui.bootstrap']);
+var myModule = angular.module('myModule', ['ui.bootstrap']);
 
-myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
+myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal, $http) {
 
-    $scope.recordsList = [
-        {name: "rec111111", date: new Date("October 13, 1992 11:13:00") , size: 1.5, checked: false},
-        {name: "aec2", date: new Date("October 13, 2012 11:13:00") , size: 1.5, checked: false},
-        {name: "rec3", date: new Date("October 13, 2010 11:13:00") , size: 1.5, checked: false},
-        {name: "rec42", date: new Date("October 13, 2011 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec5", date: new Date() , size: 2, checked: false},
-        {name: "rec6", date: new Date("October 13, 1993 11:13:00") , size: 1.5, checked: false},
-        {name: "rec12", date: new Date("October 13, 1992 11:13:00") , size: 1.5, checked: false}
-    ];
+    $scope.recordsList = [];
+    var choosenRecords = [];
+
+    $http.get('http://localhost:9000/hello').success(function (data) {
+        $scope.recordsList = data;
+    });
 
     $scope.records = [];
+
 
     $scope.totalItems = $scope.recordsList.length;
 
     var orderBy = $filter('orderBy');
 
-    $scope.order = function(predicate, reverse) {
+    $scope.order = function (predicate, reverse) {
         $scope.recordsList = orderBy($scope.recordsList, predicate, reverse);
 
-        if (predicate == 'name'){
-            $scope.arrowNameClass='arrow-true-'+ reverse;
+        if (predicate == 'name') {
+            $scope.arrowNameClass = 'arrow-true-' + reverse;
             $scope.arrowDateClass = '';
             $scope.arrowSizeClass = '';
-        }else if (predicate == 'date'){
-            $scope.arrowDateClass='arrow-true-'+ reverse;
-            $scope.arrowNameClass='';
-            $scope.arrowSizeClass='';
-        }else if (predicate == 'size'){
-        $scope.arrowSizeClass='arrow-true-'+ reverse;
-        $scope.arrowNameClass='';
-        $scope.arrowDateClass='';
-    }
+        } else if (predicate == 'date') {
+            $scope.arrowDateClass = 'arrow-true-' + reverse;
+            $scope.arrowNameClass = '';
+            $scope.arrowSizeClass = '';
+        } else if (predicate == 'size') {
+            $scope.arrowSizeClass = 'arrow-true-' + reverse;
+            $scope.arrowNameClass = '';
+            $scope.arrowDateClass = '';
+        }
     };
 
-    $scope.order('name',true);
+    $scope.order('name', true);
 
-    $scope.pageChanged = function(){
+    $scope.pageChanged = function () {
 //        $scope.records = $scope.recordsList.slice(($scope.currentPage -1) *10,$scope.currentPage *10);
         $scope.recordsList = $scope.recordsList;
     };
 
-    $scope.subArray = function(currentPage){
+    $scope.subArray = function (currentPage) {
         $scope.filteredItems = 0;
-        return function (item){
+        return function (item) {
             $scope.filteredItems++;
-          var index = $scope.recordsList.indexOf(item);
-          return ($scope.filteredItems <= currentPage *10) && ($scope.filteredItems >= ((currentPage -1)*10));
+            var index = $scope.recordsList.indexOf(item);
+            return ($scope.filteredItems <= currentPage * 10) && ($scope.filteredItems >= ((currentPage - 1) * 10));
         };
     };
 
@@ -75,11 +55,11 @@ myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
     $scope.currentPage = 1;
     $scope.pageChanged();
 
-    $scope.dateRange = function(startDate,startTime, endDate,endTime){
-        return function( item ) {
+    $scope.dateRange = function (startDate, startTime, endDate, endTime) {
+        return function (item) {
 
-             startDate = (typeof(startDate) == 'undefined' || startDate === null) ?  new Date(0) : new Date(startDate);
-             endDate =  (typeof(endDate) == 'undefined' || endDate === null) ?  new Date(): new Date(endDate);
+            startDate = (typeof(startDate) == 'undefined' || startDate === null) ? new Date(0) : new Date(startDate);
+            endDate = (typeof(endDate) == 'undefined' || endDate === null) ? new Date() : new Date(endDate);
 
             // Add time
             startDate.setMinutes(startTime.getMinutes());
@@ -91,10 +71,23 @@ myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
         };
     };
 
+    $scope.showZipped = function (show) {
+        // maybe in get
+        return show ? '' : '!' + 'zip';
+    };
 
-    $scope.setChecked = function(record){
+    $scope.setChecked = function (record) {
         record.checked = !record.checked;
-    }
+
+        if (record.checked) {
+            choosenRecords.push(record.name);
+        }
+        else {
+            var indexToRemove = choosenRecords.indexOf(record.name);
+            if (indexToRemove >= 0)
+                choosenRecords.splice(indexToRemove, 1);
+        }
+    };
     $scope.open = function () {
 
         var modalInstance = $modal.open({
@@ -104,20 +97,56 @@ myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
         });
     };
 
-    var ModalInstanceCtrl = function ($scope, $modalInstance) {
+    var ModalInstanceCtrl = function ($scope, $modalInstance, $http) {
 
 
         $scope.ok = function () {
-            $modalInstance.close();
+            $scope.showProbar = true;
+//            $modalInstance.close();
         };
 
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
+
+        $scope.createDownloadUrl = function () {
+            var url = 'http://localhost:9000/download?files=';
+            for (var i in choosenRecords) {
+                url = url + choosenRecords[i] + ',';
+            }
+
+            return url;
+        };
+
+        $scope.showProbar = false;
+        $scope.ftp = function () {
+            $scope.showProbar = true;
+            var url = 'http://localhost:9000/ftp?files=';
+            for (var i in choosenRecords) {
+                url = url + choosenRecords[i] + ',';
+            }
+
+            $http.get(url).success(function (data) {
+                $modalInstance.close();
+                $scope.showProbar = false;
+
+            }).
+                error(function (data) {
+                    $modalInstance.close();
+                    $scope.showProbar = false;
+                    alert(data);
+                });
+        };
+
+        $scope.choosenRecords = choosenRecords;
+
+        $scope.disable = function(){
+            return (!$scope.radioModel ||  $scope.choosenRecords.length ==0);
+        }
     };
 
 
-    $scope.openStart = function($event) {
+    $scope.openStart = function ($event) {
         $event.preventDefault();
         $event.stopPropagation();
 
@@ -125,7 +154,7 @@ myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
     };
     $scope.startOpened = false;
 
-    $scope.openEnd = function($event) {
+    $scope.openEnd = function ($event) {
 
         console.log($scope.startTime);
         $event.preventDefault();
@@ -135,17 +164,18 @@ myModule.controller('RecordsCtrl',function RecordsCtrl($scope,$filter,$modal){
     };
     $scope.endOpened = false;
 
-    var init = function(){
+    var init = function () {
         $scope.startTime = new Date(0);
         $scope.startTime.setMinutes(0);
         $scope.startTime.setHours(0);
 
         $scope.endTime = new Date(0);
         $scope.endTime.setMinutes(0);
-        $scope.endTime.setHours(new Date().getHours() +1);
+        $scope.endTime.setHours(new Date().getHours() + 1);
 
     };
 
     init();
+
 
 });

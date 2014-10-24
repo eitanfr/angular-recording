@@ -4,12 +4,30 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
 
     $scope.recordsList = [];
     var choosenRecords = [];
+    $scope.itemPerPage = 15;
 
+    $scope.loaded =false;
     $http.get('http://localhost:9000/hello').success(function (data) {
         $scope.recordsList = data;
+        $scope.loaded = true;
+    }).error(function(data){
+        alert('Error loading records form server: ' +data);
+        $scope.loaded = true;
     });
 
     $scope.records = [];
+
+    $scope.clearChoosen = function(){
+        for (var i =0 ; i < $scope.recordsList.length ; i++){
+            $scope.recordsList[i].checked = false;
+
+        }
+        choosenRecords =[];
+
+    };
+
+    var clearChoosen =  $scope.clearChoosen;
+
 
 
     $scope.totalItems = $scope.recordsList.length;
@@ -37,8 +55,8 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
     $scope.order('name', true);
 
     $scope.pageChanged = function () {
-//        $scope.records = $scope.recordsList.slice(($scope.currentPage -1) *10,$scope.currentPage *10);
-        $scope.recordsList = $scope.recordsList;
+//        $scope.records = $scope.recordsList.slice(($scope.currentPage -1) *$scope.itemPerPage,$scope.currentPage *$scope.itemPerPage);
+//        $scope.recordsList = $scope.recordsList;
     };
 
     $scope.subArray = function (currentPage) {
@@ -46,7 +64,7 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
         return function (item) {
             $scope.filteredItems++;
             var index = $scope.recordsList.indexOf(item);
-            return ($scope.filteredItems <= currentPage * 10) && ($scope.filteredItems >= ((currentPage - 1) * 10));
+            return ($scope.filteredItems <= currentPage * $scope.itemPerPage) && ($scope.filteredItems >= ((currentPage - 1) * $scope.itemPerPage));
         };
     };
 
@@ -102,7 +120,7 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
 
         $scope.ok = function () {
             $scope.showProbar = true;
-//            $modalInstance.close();
+            $modalInstance.close();
         };
 
         $scope.cancel = function () {
@@ -176,6 +194,7 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
     };
 
     init();
+
 
 
 });

@@ -4,10 +4,13 @@
     height: 350px;
 }
 
-/*thead { display: block; width: 100%}*/
-/*tbody { display: block; overflow:auto; height:350px; }*/
-/*th { height:39px; width:30%; }*/
-/*td { height:39px; width:30%;  margin:0px; cell-spacing:0px;}*/
+/*.tr-records {display: block; }*/
+.td-rec1 { width: 8%}
+.td-rec2 { width: 50%}
+.td-rec3 { width: 25%}
+.td-rec4 { width: 20%}
+/*.tbody-rec { display: block; height: 350px; overflow: auto;}*/
+
 
 .checked-true{
     background-color: #dff0d8;

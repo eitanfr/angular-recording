@@ -2,12 +2,14 @@ var myModule = angular.module('myModule', ['ui.bootstrap']);
 
 myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal, $http) {
 
+    var hostname = 'http://localhost:9000';
+
     $scope.recordsList = [];
     var choosenRecords = [];
     $scope.itemPerPage = 15;
 
     $scope.loaded =false;
-    $http.get('http://localhost:9000/hello').success(function (data) {
+    $http.get( hostname +'/hello').success(function (data) {
         $scope.recordsList = data;
         $scope.loaded = true;
     }).error(function(data){
@@ -128,7 +130,7 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
         };
 
         $scope.createDownloadUrl = function () {
-            var url = 'http://localhost:9000/download?files=';
+            var url = hostname+'/download?files=';
             for (var i in choosenRecords) {
                 url = url + choosenRecords[i] + ',';
             }
@@ -139,7 +141,7 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
         $scope.showProbar = false;
         $scope.ftp = function () {
             $scope.showProbar = true;
-            var url = 'http://localhost:9000/ftp?files=';
+            var url = hostname +'/ftp?files=';
             for (var i in choosenRecords) {
                 url = url + choosenRecords[i] + ',';
             }
@@ -148,6 +150,30 @@ myModule.controller('RecordsCtrl', function RecordsCtrl($scope, $filter, $modal,
                 $modalInstance.close();
                 $scope.showProbar = false;
 
+            }).
+                error(function (data) {
+                    $modalInstance.close();
+                    $scope.showProbar = false;
+                    alert(data);
+                });
+        };
+
+        $scope.downloadNew = function(){
+            $scope.showProbar = true;
+            var url = hostname +'/download?files=';
+            for (var i in choosenRecords) {
+                url = url + choosenRecords[i] + ',';
+            }
+
+            $http.get(url).success(function (data) {
+//                $modalInstance.close();
+
+//                $scope.url = 'data:application/zip,' + data;
+                var link = document.createElement('a');
+                link.download = 'xxx.zip';
+                link.href = 'data:application/zip;charset=UTF-8,' + data;
+                link.click();
+                $scope.showProbar = false;
             }).
                 error(function (data) {
                     $modalInstance.close();
